@@ -1,46 +1,51 @@
-function scheduleJoinQuest() {
-  const HABITICA_USER_ID = 'TU_HABITICA_USER_ID';
-  const HABITICA_API_TOKEN = 'TU_HABITICA_API_TOKEN';
+// --- CONFIGURACIÓN ---
+const HABITICA_USER_ID = 'TU_HABITICA_USER_ID';
+const HABITICA_API_TOKEN = 'TU_API_TOKEN';
+const CALENDAR_ID = 'asdfasdfasdfasdfasdfasfaf@group.calendar.google.com'; // 'primary' usa tu calendario principal
+// ---------------------
+
+function syncHabiticaToCalendar() {
+  const url = "https://habitica.com/api/v3/tasks/user?type=todos";
   
-  const headers = {
-    "x-api-user": HABITICA_USER_ID,
-    "x-api-key": HABITICA_API_TOKEN,
-    "x-client": HABITICA_USER_ID + "-GoogleAppsScript"
+  // Hemos añadido 'x-client' a los headers para que Habitica no rechace la conexión
+  const params = {
+    "method": "get",
+    "headers": {
+      "x-api-user": HABITICA_USER_ID,
+      "x-api-key": HABITICA_API_TOKEN,
+      "x-client": HABITICA_USER_ID + "-GoogleAppsScript" // Identificador requerido
+    },
+    "muteHttpExceptions": true 
   };
 
-  // 1. Consultar el estado de la Party
-  const response = UrlFetchApp.fetch("https://habitica.com/api/v3/groups/party", {
-    "method": "get",
-    "headers": headers,
-    "muteHttpExceptions": true
-  });
-  
-  const resJson = JSON.parse(response.getContentText());
-  const quest = resJson.data.quest;
+  const response = UrlFetchApp.fetch(url, params);
+  const responseData = JSON.parse(response.getContentText());
 
-  // LOGS DE CONTROL (Revisa esto en Ejecuciones)
-  Logger.log("¿Hay Quest activa en data?: " + (quest && quest.key ? "Sí: " + quest.key : "No"));
-  
-  if (quest && quest.key) {
-    // Verificamos si ya aceptaste (si tu ID está en la lista de miembros con valor true)
-    const yaAcepto = quest.members && quest.members[HABITICA_USER_ID] === true;
-    Logger.log("¿Ya aceptaste anteriormente?: " + yaAcepto);
-
-    // Si NO has aceptado, intentamos unirnos
-    if (!yaAcepto) {
-      Logger.log("Intentando aceptar la misión...");
-      
-      const acceptResponse = UrlFetchApp.fetch("https://habitica.com/api/v3/groups/party/quests/accept", {
-        "method": "post", // Obligatorio para realizar acciones
-        "headers": headers,
-        "muteHttpExceptions": true
-      });
-      
-      Logger.log("Respuesta de Habitica: " + acceptResponse.getContentText());
-    } else {
-      Logger.log("Ya estás dentro de la misión, no hace falta hacer nada.");
-    }
-  } else {
-    Logger.log("No se detectó ninguna invitación de misión en este momento.");
+  // Verificación de seguridad por si hay otro error
+  if (!responseData.success) {
+    Logger.log("Error de Habitica: " + responseData.message);
+    return;
   }
+
+  const tasks = responseData.data;
+  const calendar = CalendarApp.getCalendarById(CALENDAR_ID);
+
+  tasks.forEach(task => {
+    // Solo sincroniza si la tarea tiene una fecha (due date)
+    if (task.date) {
+      const taskDate = new Date(task.date);
+      
+      const taskTitle = "⚔️ Habitica: " + task.text;
+      
+      // Busca si ya existe para no duplicar
+      const events = calendar.getEventsForDay(taskDate, {search: taskTitle});
+      
+      if (events.length === 0) {
+        calendar.createAllDayEvent(taskTitle, taskDate, {
+          description: task.notes || "Tarea de Habitica"
+        });
+        Logger.log("Evento creado: " + taskTitle);
+      }
+    }
+  });
 }
