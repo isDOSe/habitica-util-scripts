@@ -17,6 +17,7 @@ Sincroniza tus tareas pendientes ("To-Dos") de Habitica que tengan una fecha de 
 Sincroniza tus tareas pendientes ("To-Dos") de Habitica que tengan una fecha de vencimiento directamente con tu **Google Task**.
 - Crea tareas directamente en la lista de tareas que indiques
 - Evita duplicados buscando eventos existentes con el mismo nombre de igual forma que el script anterior
+- Incluye las notas de la tarea en la descripción del task de Google.
 - Debes obtener el Task ID, he creado un script (`temp-get-google-task.list.js`) que debes ejecutar para obtener todos tus task ids
 ---
 
