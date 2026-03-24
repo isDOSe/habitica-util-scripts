@@ -18,7 +18,10 @@ Sincroniza tus tareas pendientes ("To-Dos") de Habitica que tengan una fecha de 
 - Crea tareas directamente en la lista de tareas que indiques
 - Evita duplicados buscando eventos existentes con el mismo nombre de igual forma que el script anterior
 - Incluye las notas de la tarea en la descripción del task de Google.
-- Debes obtener el Task ID, he creado un script (`temp-get-google-task.list.js`) que debes ejecutar para obtener todos tus task ids
+
+### 4. Get Google Task List (`temp-get-google-task.list.js`) - NUEVO
+Obtiene el ID de todas tus listas de **Google Task**.
+- Solo debes crear un proyecto nuevo y ejecutar solo este script (recuerda activar el API)
 ---
 
 ## 🛠️ Cómo Usarlos
@@ -32,6 +35,7 @@ Para usar estos scripts, sigue estos pasos:
    - `HABITICA_USER_ID`: Tu ID de usuario de Habitica.
    - `HABITICA_API_TOKEN`: Tu Token de API de Habitica.
    - `CALENDAR_ID` (en el script de calendario): Tu ID de calendario (puedes usar `'primary'` para tu calendario principal).
+   - `GOOGLE_TASKS_LIST_ID`: Tu ID de la lista de tareas de Google Task, para obtenerlo he creado un script para ello.
 5. Guarda el proyecto.
 6. **Automatización**: Haz clic en el icono del reloj (Activadores) en la barra lateral izquierda y añade un nuevo activador para que la función se ejecute automáticamente (por ejemplo, cada hora o una vez al día).
 7. Recuerda que tanto para el Calendar como para los Tasks, debes activar las APIs de dichos servicios en Google Script, en la barra lateral haciendo click en el + de "services"
@@ -47,4 +51,4 @@ Creado por: **dose**
 
 ---
 
-*Nota: Estos scripts son herramientas de terceros y no están oficialmente afiliados a Habitica.*
+*Nota: Estos scripts son herramientas de terceros y no están oficialmente afiliados a Habitica (ojalá y me pagaran por hacerle estas integraciones que ya deberían ser un estandar en cualquier herramiento del mundo)*
