@@ -33,9 +33,24 @@ function syncHabiticaToGoogleTasks() {
   Logger.log(`Tareas totales en Habitica: ${habiticaTasks.length}`);
   Logger.log(`Tareas con fecha: ${tasksWithDate.length}`);
 
+  // Obtener todos los tags disponibles
+  Logger.log("\nObteniendo tags de Habitica...");
+  const tagsUrl = "https://habitica.com/api/v3/tags";
+  const tagsResponse = UrlFetchApp.fetch(tagsUrl, params);
+  const tagsData = JSON.parse(tagsResponse.getContentText());
+  const tagsMap = {};
+  
+  if (tagsData.success) {
+    tagsData.data.forEach(tag => {
+      tagsMap[tag.id] = tag.name;
+    });
+    Logger.log(`Tags obtenidos: ${Object.keys(tagsMap).length}`);
+  }
+
   Logger.log("\n--- TAREAS DE HABITICA CON FECHA ---");
   tasksWithDate.forEach(task => {
-    Logger.log(`- "${task.text}" | Fecha: ${new Date(task.date).toLocaleDateString()}`);
+    const taskTags = task.tags ? task.tags.map(tagId => tagsMap[tagId]).filter(Boolean).join(', ') : 'Sin tags';
+    Logger.log(`- "${task.text}" | Fecha: ${new Date(task.date).toLocaleDateString()} | Tags: ${taskTags}`);
   });
 
   const taskList = Tasks.Tasklists.get(GOOGLE_TASKS_LIST_ID);
@@ -54,11 +69,16 @@ function syncHabiticaToGoogleTasks() {
 
   Logger.log("\n--- INICIANDO COMPARACIÓN ---");
   tasksWithDate.forEach(task => {
-    const taskTitle = "✅ Habitica: " + task.text;
+    // Obtener nombres de tags si existen
+    const taskTags = task.tags ? task.tags.map(tagId => tagsMap[tagId]).filter(Boolean) : [];
+    const tagsString = taskTags.length > 0 ? ` [${taskTags.join(', ')}]` : '';
+    
+    const taskTitle = "✅ Habitica: " + task.text + tagsString;
     const taskDate = new Date(task.date);
     
     Logger.log(`\nProcesando: "${task.text}"`);
     Logger.log(`  Fecha: ${taskDate.toLocaleDateString()}`);
+    Logger.log(`  Tags: ${taskTags.join(', ') || 'Ninguno'}`);
     Logger.log(`  Título a crear: "${taskTitle}"`);
 
     if (existingTitles.includes(taskTitle)) {
