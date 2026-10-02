@@ -29,6 +29,14 @@ Basado en el script de Google Tasks, pero en lugar de crear tareas, crea **event
 - Incluye los tags de Habitica en el título del evento
 - Evita duplicados buscando eventos existentes con el mismo nombre de igual forma que el script anterior
 - Incluye las notas de la tarea en la descripción del evento.
+
+### 6. Sync Asana to Habitica (`sync-asana-to-habitica.js`)
+Importa en Habitica las tareas abiertas de un proyecto de **Asana** que tengan fecha de vencimiento.
+- Copia la fecha de vencimiento y las notas de Asana
+- Crea las tareas con dificultad media y el tag `🏯 Terrenos del Gremio`
+- Evita duplicados guardando el GID de Asana en las notas de Habitica
+- Configura `ASANA_HABITICA_USER_ID`, `ASANA_HABITICA_API_TOKEN`, `ASANA_PERSONAL_ACCESS_TOKEN` y `ASANA_PROJECT_ID` al inicio del archivo
+- El tag debe existir previamente en Habitica; configura un activador periódico en Apps Script para importar tareas nuevas
 ---
 
 ## 🛠️ Cómo Usarlos
